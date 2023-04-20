@@ -1,0 +1,27 @@
+data=pd.DataFrame()
+for j in range(len(links2)):
+    page_home=requests.get(links2[j])
+    html_home      =BeautifulSoup(page_home.content,'html.parser').find_all('div',class_='param_info')
+    html_home_price=BeautifulSoup(page_home.content,'html.parser').find_all('div',class_='price_header')
+    html_home_date =BeautifulSoup(page_home.content,'html.parser').find_all('div',class_='item_info')
+    
+    html_home      =re.sub('<[^>]+>',' ',str(html_home))      .strip().replace('  ',' ')
+    html_home_price=re.sub('<[^>]+>',' ',str(html_home_price)).strip().replace('  ',' ')
+    html_home_date =re.sub('<[^>]+>',' ',str(html_home_date)) .strip().replace('  ',' ')
+    #print(html_home)
+    if html_home.find('tikili')>0:
+        data=data.append({'Kateqoriya'               :(html_home[html_home.find('Kateqoriya')+10     :html_home.find('Mərtəbə')]),
+                          'Mərtəbə'                  :(html_home[html_home.find('Mərtəbə')+7         :html_home.find('Sahə')]),
+                          'Sahə'                     :(html_home[html_home.find('Sahə ')+4           :html_home.find('Otaq sayı')]),
+                          'Otaq sayı'                :(html_home[html_home.find('Otaq sayı')+9       :html_home.find('Çıxarış')]),
+                          'Təmir'                    :(html_home[html_home.find('Təmir')+5           :html_home.find('Təmir')+12]),
+                          'Ünvan'                    :(html_home[html_home.find('Təmir')+12          : -1]),
+                          'Qiymət'                   :(html_home_price[html_home_price.find('[')+1   :html_home_price.find('AZN')+3]),
+                          'Elanın nömrəsi'           :(html_home_date[html_home_date.find('Elan')+14 :html_home_date.find('Baxış')]),
+                          'Baxış sayı'               :(html_home_date[html_home_date.find('Baxış')+15:html_home_date.find('Yenilə')]),
+                          'Tarix'                    :(html_home_date[html_home_date.find('Yenil')+9 :-1])
+                          #,'Full_text_html_home'      :html_home,
+                          #'Full_text_html_home_price':html_home_price
+                          },
+                         ignore_index=True)
+data
